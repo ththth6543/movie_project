@@ -3,7 +3,7 @@
 #include <string.h>
 #include <windows.h>
 #include <time.h>
-
+//유준열
 typedef struct movie {
 	int serial_number;
 	char *title;
