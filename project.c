@@ -716,6 +716,7 @@ void control_c(int sig)
 	printf("\nGet Interrupt signal.\n");
 	printf("Do you want to exit program? (Y/n) ");
 	scanf("%s", answer);
+	//printf("(movie) ");
 	if((*answer == 'y' || *answer == 'Y'))
 		exit(1);
 }
@@ -733,7 +734,7 @@ int main(void) {
 
 	//signal(SIGINT, control_c);
 	while (exit_num) {
-		signal(SIGINT, control_c);
+		//signal(SIGINT, control_c);
 		printf("(movie) ");
 		//signal(SIGINT, control_c);
 		gets(input_words);
