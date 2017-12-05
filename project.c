@@ -199,72 +199,185 @@ void save_actor() {
 	fclose(fp);
 	printf("@@ Done\n\n");
 }
+int power(int x, int y){ //x^y
+	int pow = 1;
+	int i = 0;
+	while (i < y){
+		pow = pow * x;
+		i++;
+	}
+
+	return pow;
+}
 
 void search(char *string, char *option) {
+
+	int i = 0, j = 1; // while문 돌리기 위해 필요한 변수
+
 	d = root_director; //포인터 초기화
 	m = root_movie; //포인터 초기화
 	a = root_actor; //포인터 초기화
-	int str_len; // 메타문자를 제외한 string의 길이를 저장할 변수
-	char *meta_string; //메타문자를 제외한 검색어를 저장하는 포인터
-	str_len = strlen(string); //길이 저장
-	char *string_token; // strtok()를 한 변수를 저장
-	if (*(string) == '*'){ //메타문자 *이 앞에 있을때
-		string_token = (char *)malloc(sizeof(char)*str_len);
-		meta_string = (char *)malloc(sizeof(char)*str_len);
-		string_token = strtok(string, "*"); //문자열에 있는 '*'제거
-		meta_string = string_token; // *를 제거한 문자열을 meta_string에 저장
-		
-		if (strlen(option) == 4) { //링크리스트 필요함, 옵션 확인
-			if (!strcmp(option, "-dma")) {
-				printf("1\n"); //확인코드
 
+	int str_len; // string의 길이를 저장할 변수
+	char *meta_string; //메타문자를 제외한 검색어를 저장하는 포인터
+	char *string_token; // strtok()를 한 변수를 저장
+
+	int question_num = 0; // 물음표 숫자
+	char *question_location; // 물음표 위치 저장
+
+	question_location = (char *)malloc(sizeof(char)*str_len);
+
+	str_len = strlen(string); // string 길이 저장
+
+	int correct_score = 0; // 맞는지 확인 변수
+
+	while (i < str_len){ //물음표 있는지 검사
+		if (*(string + i) == '?'){ // ? 확인
+			*(question_location + i) = 1; // ? 위치를 기억, ? 있으면 1, 없으면 0
+			question_num++;
+			i++;
+		}
+		else{
+			*(question_location + i) = 0;
+		}
+		i++;
+	}
+	if (question_num != 0){ // '?'가 1개이상 존재
+		if (*(string) == '*'){ //메타문자 *이 앞에 있을때
+			/*string_token = (char *)malloc(sizeof(char)*str_len);
+			meta_string = (char *)malloc(sizeof(char)*str_len);
+			string_token = strtok(string, "*"); //문자열에 있는 '*'제거
+			meta_string = string_token; // *를 제거한 문자열을 meta_string에 저장
+			*/
+			if (strlen(option) == 4) { //링크리스트 필요함, 옵션 확인
+				if (!strcmp(option, "-dma")) {
+					while(d -> next != NULL){ // 감독검색
+						while(j < str_len ){
+							if (*(question_location + j)){ // ? 확인하고 있는 경우
+								j++;
+							}
+							else{ // ? 확인하고 없는 경우
+								if (*(string + j) == *(d -> name) + (strlen(d -> name) - str_len + j)){
+									correct_score++;
+									j++;
+								}
+							}
+						}
+						if (correct_score == (str_len - question_num - 1)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> birth, d -> best_movies);
+							d = d -> next;
+							j = 1; // j 초기화
+							correct_score = 0; // correct_score 초기화
+						}
+						else{
+							d = d -> next;
+							j = 1; // j 초기화
+							correct_score = 0; // correct_score 초기화
+						}
+					}
+					while(m -> next != NULL){ // 영화 검색
+						while(j < str_len){
+							if (*(question_location + j)){
+								j++;
+							}
+							else{
+								if (*(string + j) == *(m -> title) + (strlen(m -> title) - str_len + j)){
+									correct_score++;
+									j++;
+								}
+							}
+						}
+						if (correct_score == (str_len - question_num - 1)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+							m = m -> next;
+							j = 1; // 초기화
+							correct_score = 0; // 초기화
+						}
+						else{
+							m = m -> next;
+							j = 1;
+							correct_score = 0;
+						}
+					}
+					while(a -> next != NULL){ // 배우 검색
+						while(j < str_len){
+							if (*(question_location + j)){
+								j++;
+							}
+							else{
+								if (*(string + j) == *(a -> name) + (strlen(a -> name) - str_len + j)){
+									correct_score++;
+									j++;
+								}
+							}
+						}
+						if (correct_score == (str_len - question_num - 1)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+							a = a -> next;
+							j = 1;
+							correct_score = 0;
+						}
+						else{
+							a = a -> next;
+							j = 1;
+							correct_score = 0;
+						}
+					}
+				}
+				else if (!strcmp(option, "-dam")) {
+					printf("2\n"); //확인코드
+				}
+				else if (!strcmp(option, "-mda")) {
+					printf("3\n"); //확인코드
+				}
+				else if (!strcmp(option, "-mad")) {
+					printf("4\n"); //확인코드
+				}
+				else if (!strcmp(option, "-amd")) {
+					printf("5\n"); //확인코드
+				}
+				else if (!strcmp(option, "-adm")) {
+					printf("6\n"); //확인코드
+				}
 			}
-			else if (!strcmp(option, "-dam")) {
-				printf("2\n"); //확인코드
+			else if (strlen(option) == 3) {//링크리스트 필요함
+				if (!strcmp(option, "-da")) {
+					printf("7\n"); //확인코드
+				}
+				else if (!strcmp(option, "-ad")) {
+					printf("8\n"); //확인코드
+				}
+				else if (!strcmp(option, "-dm")) {
+					printf("9\n"); //확인코드
+				}
+				else if (!strcmp(option, "-md")) {
+					printf("10\n"); //확인코드
+				}
+				else if (!strcmp(option, "-am")) {
+					printf("11\n"); //확인코드
+				}
+				else if (!strcmp(option, "-ma")) {
+					printf("12\n"); //확인코드
+				}
 			}
-			else if (!strcmp(option, "-mda")) {
-				printf("3\n"); //확인코드
-			}
-			else if (!strcmp(option, "-mad")) {
-				printf("4\n"); //확인코드
-			}
-			else if (!strcmp(option, "-amd")) {
-				printf("5\n"); //확인코드
-			}
-			else if (!strcmp(option, "-adm")) {
-				printf("6\n"); //확인코드
+			else if (strlen(option) == 2) { //링크리스트 필요함
+				if (!strcmp(option, "-d")) {
+					printf("13\n"); //확인코드
+				}
+				else if (!strcmp(option, "-a")) {
+					printf("14\n"); //확인코드
+				}
+				else if (!strcmp(option, "-m")) {
+					printf("15\n"); //확인코드
+				}
 			}
 		}
-		else if (strlen(option) == 3) {//링크리스트 필요함
-			if (!strcmp(option, "-da")) {
-				printf("7\n"); //확인코드
-			}
-			else if (!strcmp(option, "-ad")) {
-				printf("8\n"); //확인코드
-			}
-			else if (!strcmp(option, "-dm")) {
-				printf("9\n"); //확인코드
-			}
-			else if (!strcmp(option, "-md")) {
-				printf("10\n"); //확인코드
-			}
-			else if (!strcmp(option, "-am")) {
-				printf("11\n"); //확인코드
-			}
-			else if (!strcmp(option, "-ma")) {
-				printf("12\n"); //확인코드
-			}
+
+		else if (*(string + (str_len - 1)) == '*'){ // 메타문자 '*'이 뒤에 있을 때
+
 		}
-		else if (strlen(option) == 2) { //링크리스트 필요함
-			if (!strcmp(option, "-d")) {
-				printf("13\n"); //확인코드
-			}
-			else if (!strcmp(option, "-a")) {
-				printf("14\n"); //확인코드
-			}
-			else if (!strcmp(option, "-m")) {
-				printf("15\n"); //확인코드
-			}
+		else{ // '?'만 존재
+
 		}
 	}
 
@@ -732,7 +845,11 @@ int main(void) {
 	printf("File Loading.....\n");
 	printf("You can use add, update, delete, search, sort, save, end commands.\n");
 
-	//signal(SIGINT, control_c);
+	/*if (signal(SIGINT, control_c) == &control_c){
+	  signal(SIGINT, control_c);
+	  printf("(movie) ");
+	  }*/
+	signal(2, control_c);
 	while (exit_num) {
 		//signal(SIGINT, control_c);
 		printf("(movie) ");
