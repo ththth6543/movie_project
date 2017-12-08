@@ -199,20 +199,10 @@ void save_actor() {
 	fclose(fp);
 	printf("@@ Done\n\n");
 }
-int power(int x, int y){ //x^y
-	int pow = 1;
-	int i = 0;
-	while (i < y){
-		pow = pow * x;
-		i++;
-	}
-
-	return pow;
-}
 
 void search(char *string, char *option) {
 
-	int i = 0, j = 1; // while문 돌리기 위해 필요한 변수
+	int i = 0, j = 1, k = 0; // while문 돌리기 위해 필요한 변수
 
 	d = root_director; //포인터 초기화
 	m = root_movie; //포인터 초기화
@@ -244,15 +234,13 @@ void search(char *string, char *option) {
 	}
 	if (question_num != 0){ // '?'가 1개이상 존재
 		if (*(string) == '*'){ //메타문자 *이 앞에 있을때
-			/*string_token = (char *)malloc(sizeof(char)*str_len);
-			meta_string = (char *)malloc(sizeof(char)*str_len);
-			string_token = strtok(string, "*"); //문자열에 있는 '*'제거
-			meta_string = string_token; // *를 제거한 문자열을 meta_string에 저장
-			*/
 			if (strlen(option) == 4) { //링크리스트 필요함, 옵션 확인
-				if (!strcmp(option, "-dma")) {
-					while(d -> next != NULL){ // 감독검색
-						while(j < str_len ){
+				if (option == NULL){ //옵션이 없을 때 - d,m,a 다 검색
+
+				}
+				else if (!strcmp(option, "-dma")) {
+					while (d -> next != NULL){ // 감독검색
+						while (j < str_len ){
 							if (*(question_location + j)){ // ? 확인하고 있는 경우
 								j++;
 							}
@@ -275,8 +263,8 @@ void search(char *string, char *option) {
 							correct_score = 0; // correct_score 초기화
 						}
 					}
-					while(m -> next != NULL){ // 영화 검색
-						while(j < str_len){
+					while (m -> next != NULL){ // 영화 검색
+						while (j < str_len){
 							if (*(question_location + j)){
 								j++;
 							}
@@ -299,8 +287,8 @@ void search(char *string, char *option) {
 							correct_score = 0;
 						}
 					}
-					while(a -> next != NULL){ // 배우 검색
-						while(j < str_len){
+					while (a -> next != NULL){ // 배우 검색
+						while (j < str_len){
 							if (*(question_location + j)){
 								j++;
 							}
@@ -372,262 +360,374 @@ void search(char *string, char *option) {
 				}
 			}
 		}
-
 		else if (*(string + (str_len - 1)) == '*'){ // 메타문자 '*'이 뒤에 있을 때
+			if (strlen(option) == 4){
+				while (d -> next != NULL){
+					while (k < (str_len - 1)){
+						if (*(question_location + k)){ // ? 있음
+							k++;
+						}
+						else{ //? 없음
+							if (*(string + k) == *(d -> name) + k){
+								correct_score++;
+								k++;
+							}
+						}
+					}
+					if (correct_score == (str_len - question_num - 1)){
+						printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> birth, d -> best_movies);
+						d = d -> next;
+						k = 0;
+						correct_score = 0;
+					}
+					else{
+						d = d -> next;
+						k = 0;
+						correct_score = 0;
+					}
+				}
+				while (m -> next != NULL){
 
-		}
-		else{ // '?'만 존재
+				}
+				while (a -> next != NULL){
 
-		}
-	}
+				}
+			}
+			else{ // '?'만 존재
+				if (strlen(option) == 4){
+					while (d -> next != NULL){
+						while (k < str_len){
+							if (*(question_location + k)){
+								k++;
+							}
+							else{
+								if (*(string + k) == *(d -> name) + k){
+									correct_score++;
+									j++;
+								}
+							}
+						}
+						if (correct_score == (str_len - question_num)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> birth, d -> best_movies);
+							d = d -> next;
+							k = 0;
+							correct_score = 0;
+						}
+						else{
+							d = d -> next;
+							k = 0;
+							correct_score = 0;
+						}
+					}
+					while (m -> next != NULL){
 
+					}
+					while (m -> next != NULL){
 
-	if (strlen(option) == 4) { //링크리스트 필요함, 메타문자 없이 전체를 검색할때
-		if (!strcmp(option, "-dma")) {
-			printf("1\n"); //확인코
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+					}
 				}
-				d = d -> next;
-			}
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
-				}
-				m = m -> next;
-			}
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
-				}
-				a = a -> next;
-			}
-		}
-		else if (!strcmp(option, "-dam")) {
-			printf("2\n"); //확인코드
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
-				}
-				d = d -> next;
-			}
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
-				}
-				m = m -> next;
-			}
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
-				}
-				a = a -> next;
-			}
-		}
-		else if (!strcmp(option, "-mda")) {
-			printf("3\n"); //확인코드
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
-				}
-				d = d -> next;
-			}
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
-				}
-				m = m -> next;
-			}
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
-				}
-				a = a -> next;
-			}
-		}
-		else if (!strcmp(option, "-mad")) {
-			printf("4\n"); //확인코드
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
-				}
-				d = d -> next;
-			}
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
-				}
-				m = m -> next;
-			}
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
-				}
-				a = a -> next;
-			}
-		}
-		else if (!strcmp(option, "-amd")) {
-			printf("5\n"); //확인코드
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
-				}
-				d = d -> next;
-			}
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
-				}
-				m = m -> next;
-			}
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
-				}
-				a = a -> next;
-			}
-		}
-		else if (!strcmp(option, "-adm")) {
-			printf("6\n"); //확인코드
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
-				}
-				d = d -> next;
-			}
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
-				}
-				m = m -> next;
-			}
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
-				}
-				a = a -> next;
 			}
 		}
 	}
-	else if (strlen(option) == 3) {//링크리스트 필요함
-		if (!strcmp(option, "-da")) {
-			printf("7\n"); //확인코드
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+	else if (question_num == 0){ //'?'가 없음
+		if (*(string) == '*'){ //'*'이 앞에 있음
+			if (strlen(option) == 4){
+				while (d -> next != NULL){
+					while (j < str_len){
+						if (*(string + j) == *(d -> name) + (strlen(d -> name) - str_len + j)){
+							correct_score++;
+							j++;
+						}
+					}
+					if (correct_score == (str_len - 1)){
+						printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> birth, d -> best_movies);
+						d = d -> next;
+						j = 1;
+						correct_score = 0;
+					}
+					else{
+						d = d -> next;
+						j = 1;
+						correct_score = 0;
+					}
 				}
-				d = d -> next;
-			}
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
-				}
-				a = a -> next;
-			}
-		}
-		else if (!strcmp(option, "-ad")) {
-			printf("8\n"); //확인코드
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
-				}
-				d = d -> next;
-			}
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
-				}
-				a = a -> next;
 			}
 		}
-		else if (!strcmp(option, "-dm")) {
-			printf("9\n"); //확인코드
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+		else if (*(string + (str_len - 1)) == '*'){ // '*'이 뒤에 있음
+			if (strlen(option) == 4){
+				while (d -> next != NULL){
+					while (k < (str_len - 1)){
+						if (*(string + k) == *(d -> name) + k){
+							correct_score++;
+							j++;
+						}
+					}
+					if (correct_score == (str_len - 1)){
+						printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> birth, d -> best_movies);
+						d = d -> next;
+						k = 0;
+						correct_score = 0;
+					}
+					else{
+						d = d -> next;
+						k = 0;
+						correct_score = 0;
+					}
 				}
-				d = d -> next;
-			}
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
-				}
-				m = m -> next;
-			}
-		}
-		else if (!strcmp(option, "-md")) {
-			printf("10\n"); //확인코드
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
-				}
-				d = d -> next;
-			}
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
-				}
-				m = m -> next;
 			}
 		}
-		else if (!strcmp(option, "-am")) {
-			printf("11\n"); //확인코드
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
-				}
-				m = m -> next;
+		else{ // '*' 없음 - 전체를 검색
+			if (option == NULL){ // 옵션이 없을 때
+				printf("12345\n");
 			}
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+			else if (strlen(option) == 4) { //메타문자 없이 전체를 검색할때
+				if (!strcmp(option, "-dma")) {
+					printf("1\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
 				}
-				a = a -> next;
+				else if (!strcmp(option, "-dam")) {
+					printf("2\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
+				}
+				else if (!strcmp(option, "-mda")) {
+					printf("3\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
+				}
+				else if (!strcmp(option, "-mad")) {
+					printf("4\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
+				}
+				else if (!strcmp(option, "-amd")) {
+					printf("5\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
+				}
+				else if (!strcmp(option, "-adm")) {
+					printf("6\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
+				}
 			}
-		}
-		else if (!strcmp(option, "-ma")) {
-			printf("12\n"); //확인코드
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+			else if (strlen(option) == 3) {//링크리스트 필요함
+				if (!strcmp(option, "-da")) {
+					printf("7\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
 				}
-				m = m -> next;
+				else if (!strcmp(option, "-ad")) {
+					printf("8\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
+				}
+				else if (!strcmp(option, "-dm")) {
+					printf("9\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
+				}
+				else if (!strcmp(option, "-md")) {
+					printf("10\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
+				}
+				else if (!strcmp(option, "-am")) {
+					printf("11\n"); //확인코드
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
+				}
+				else if (!strcmp(option, "-ma")) {
+					printf("12\n"); //확인코드
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
+				}
 			}
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+			else if (strlen(option) == 2) { //링크리스트 필요함
+				if (!strcmp(option, "-d")) {
+					printf("13\n"); //확인코드
+					while (d -> next != NULL){ //감독 검색
+						if (!strcmp(string, d -> name)){
+							printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+						}
+						d = d -> next;
+					}
 				}
-				a = a -> next;
-			}
-		}
-	}
-	else if (strlen(option) == 2) { //링크리스트 필요함
-		if (!strcmp(option, "-d")) {
-			printf("13\n"); //확인코드
-			while (d -> next != NULL){ //감독 검색
-				if (!strcmp(string, d -> name)){
-					printf("%d:%s:%s:%s:%s\n", d -> serial_number, d -> name, d -> sex, d -> birth, d -> best_movies, d -> name);
+				else if (!strcmp(option, "-a")) {
+					printf("14\n"); //확인코드
+					while (a -> next != NULL){ //배우 검색
+						if (!strcmp(string, a -> name)){
+							printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+						}
+						a = a -> next;
+					}
 				}
-				d = d -> next;
-			}
-		}
-		else if (!strcmp(option, "-a")) {
-			printf("14\n"); //확인코드
-			while (a -> next != NULL){ //배우 검색
-				if (!strcmp(string, a -> name)){
-					printf("%d:%s:%s:%s:%s\n", a -> serial_number, a -> name, a -> sex, a -> birth, a -> best_movies);
+				else if (!strcmp(option, "-m")) {
+					printf("15\n"); //확인코드
+					while (m -> next != NULL){ //영화 검색
+						if (!strcmp(string, m -> title)){
+							printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
+						}
+						m = m -> next;
+					}
 				}
-				a = a -> next;
-			}
-		}
-		else if (!strcmp(option, "-m")) {
-			printf("15\n"); //확인코드
-			while (m -> next != NULL){ //영화 검색
-				if (!strcmp(string, m -> title)){
-					printf("%d:%s:%s:%s:%s:%s:%s\n", m -> serial_number, m -> title, m -> genre, m -> director, m -> year, m -> time, m -> actors);
-				}
-				m = m -> next;
 			}
 		}
 	}
@@ -729,6 +829,9 @@ int menu_func(char *input) {	//명령어 입력한거 실행하는거, 추후에
 			strcpy(option, token);
 			printf("option : %s\n", option);	//option 확인
 			token = strtok(NULL, cut);
+		}
+		else{
+			option = NULL;
 		}
 		string = (char *)malloc(sizeof(char) * strlen(token) + 1);
 		strcpy(string, token);
